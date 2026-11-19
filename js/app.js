@@ -106,7 +106,7 @@ species.forEach((spec,n)=>{
 on('undo',()=>{if(!state.flowers.length)return;state.flowers.pop();persist();$('paper-wrap').classList.remove('wrapped');$('gift-tag').classList.remove('tagged');render()});
 on('reset',()=>{state.flowers=[];persist();$('paper-wrap').classList.remove('wrapped');$('gift-tag').classList.remove('tagged');render()});
 on('open-notes',()=>nav('notes'));
-function svgDownload(){const art=$('bouquet-art').cloneNode(true);art.setAttribute('xmlns',NS);art.setAttribute('width','880');art.setAttribute('height','960');const bg=make('rect',{width:440,height:480,fill:'#fff8ee'});art.insertBefore(bg,art.firstChild);return new XMLSerializer().serializeToString(art)}
+function svgDownload(){const art=$('bouquet-art').cloneNode(true);art.querySelectorAll('[hidden]').forEach(el=>el.remove());art.querySelectorAll('.wrapped,.tagged').forEach(el=>el.removeAttribute('class'));art.setAttribute('xmlns',NS);art.setAttribute('width','880');art.setAttribute('height','960');const bg=make('rect',{width:440,height:480,fill:'#fff8ee'});art.insertBefore(bg,art.firstChild);return new XMLSerializer().serializeToString(art)}
 function downloadable(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove()}
 function blobDownload(blob,name){const url=URL.createObjectURL(blob);downloadable(url,name);setTimeout(()=>URL.revokeObjectURL(url),7000)}
 async function saveBouquet(){
