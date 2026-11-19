@@ -12,7 +12,7 @@ function on(id,fn){const el=$(id);if(el)el.addEventListener('click',fn)}
 const introCard=$('letter');
 on('open-letter',()=>{
  if(state.intro!=='closed')return;state.intro='open';
- const env=$('open-letter');env.classList.add('opening');env.disabled=true;
+ const env=$('open-letter');env.classList.add('opening');env.disabled=true;env.setAttribute('aria-expanded','true');
  $('intro-prompt').hidden=true;$('intro-skip').hidden=true;
  // Hide only the envelope, not the entire stage; never place a new button under the active finger.
  introCard.hidden=false;
@@ -79,8 +79,8 @@ function render(){
   heads.appendChild(bloom(species[num],x,y,34));
  });
  const complete=selected.length===7;
- $('paper-wrap').hidden=!complete;$('gift-tag').hidden=!complete;
- $('placeholder').hidden=selected.length!==0;
+ $('paper-wrap').toggleAttribute('hidden',!complete);$('gift-tag').toggleAttribute('hidden',!complete);
+ $('placeholder').toggleAttribute('hidden',selected.length!==0);
  $('completion').hidden=!complete;
  $('count').textContent=selected.length+' OF 7 FLOWERS';
  $('flower-status').textContent=complete?'Wrapped, ribbon tied, and a little tag just for you. ♡':selected.length?(7-selected.length)+' more to go. Take your time.':'Choose whichever flower you like.';
@@ -152,7 +152,7 @@ notes.forEach((note,i)=>{
  const hint=document.createElement('span');hint.className='note-hint';hint.textContent='TAP TO OPEN';
  b.append(stamp,label,hint);b.addEventListener('click',()=>openNote(i,b));noteGrid.appendChild(b);
 });
-on('close-note',closeNote);
+on('close-note',closeNote);on('close-note-bottom',closeNote);
 $('note-modal').addEventListener('click',event=>{if(event.target===$('note-modal'))closeNote()});
 document.addEventListener('keydown',event=>{
  if(state.modal===null)return;
