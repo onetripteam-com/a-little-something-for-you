@@ -9,6 +9,26 @@ const getSaved=()=>{try{const a=JSON.parse(localStorage.getItem(STORE));return A
 const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify(state.flowers))}catch{}};
 function nav(id){const target=$(id);if(!target)return;const active=document.activeElement;if(active&&active!==document.body&&typeof active.blur==='function')active.blur();const y=Math.max(0,Math.round(target.getBoundingClientRect().top+window.scrollY));try{window.scrollTo({top:y,left:0,behavior:reduce()?'auto':'smooth'})}catch{window.scrollTo(0,y)}}
 function on(id,fn){const el=$(id);if(el)el.addEventListener('click',fn)}
+// iOS in-app browsers can ignore overflow:hidden on body while modals scroll.
+// Preserve the document position and explicitly lock the background instead.
+let lockedAt=0;
+function lockPage(){
+ if(document.body.dataset.scrollLocked==='true')return;
+ lockedAt=window.scrollY||window.pageYOffset||0;
+ document.body.dataset.scrollLocked='true';
+ document.body.style.position='fixed';
+ document.body.style.top=(-lockedAt)+'px';
+ document.body.style.left='0';
+ document.body.style.right='0';
+ document.body.style.width='100%';
+}
+function unlockPage(){
+ if(document.body.dataset.scrollLocked!=='true')return;
+ delete document.body.dataset.scrollLocked;
+ for(const key of ['position','top','left','right','width'])document.body.style[key]='';
+ window.scrollTo(0,lockedAt);
+}
+
 const introCard=$('letter');
 const introOverlay=$('letter-overlay');
 let introOpeningTimer=0;
@@ -25,6 +45,7 @@ function showLetter(){
    envelope.disabled=false;
    envelope.setAttribute('aria-expanded','true');
    introOverlay.hidden=false;
+   lockPage();
    document.body.classList.add('letter-open');
    // An independent, fixed dialog cannot resize the home section or
    // send a mobile viewport to an unexpected vertical position.
@@ -37,6 +58,7 @@ function closeLetter(){
  clearTimeout(introOpeningTimer);
  introOverlay.hidden=true;
  document.body.classList.remove('letter-open');
+ unlockPage();
  const envelope=$('open-letter');
  envelope.classList.remove('opening');
  envelope.disabled=false;
@@ -206,10 +228,10 @@ function openNote(i,button){
  if(state.modal!==null)return;state.modal=i;state.lastFocus=button;opener=button;
  $('note-dialog-title').textContent=notes[i].title;
  $('note-dialog-text').textContent=notes[i].body;
- const modal=$('note-modal');modal.hidden=false;document.body.classList.add('modal-open');
+ const modal=$('note-modal');modal.hidden=false;lockPage();document.body.classList.add('modal-open');
  $('close-note').focus({preventScroll:true});state.openedNotes.add(i);button.querySelector('.note-hint').textContent='READ AGAIN';
 }
-function closeNote(){if(state.modal===null)return;state.modal=null;$('note-modal').hidden=true;document.body.classList.remove('modal-open');if(opener&&opener.isConnected)opener.focus({preventScroll:true});opener=null}
+function closeNote(){if(state.modal===null)return;state.modal=null;$('note-modal').hidden=true;document.body.classList.remove('modal-open');unlockPage();if(opener&&opener.isConnected)opener.focus({preventScroll:true});opener=null}
 notes.forEach((note,i)=>{
  const b=document.createElement('button');b.type='button';b.className='note-card';b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-label','Open note: '+note.title);
  const stamp=document.createElement('span');stamp.className='note-stamp';stamp.textContent=['✉','❧','♡','✷','✦','✿','⌁'][i];
