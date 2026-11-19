@@ -11,12 +11,14 @@ function nav(id){const target=$(id);if(!target)return;const active=document.acti
 function on(id,fn){const el=$(id);if(el)el.addEventListener('click',fn)}
 const introCard=$('letter');
 on('open-letter',()=>{
- if(state.intro!=='closed')return;state.intro='open';
- const env=$('open-letter');env.classList.add('opening');env.disabled=true;env.setAttribute('aria-expanded','true');
+ if(state.intro!=='closed')return;state.intro='opening';
+ const env=$('open-letter');env.disabled=true;env.setAttribute('aria-expanded','true');
  $('intro-prompt').hidden=true;$('intro-skip').hidden=true;
- // Hide only the envelope, not the entire stage; never place a new button under the active finger.
- introCard.hidden=false;
- env.hidden=true;
+ // Let the envelope finish its own animation before introducing new tap targets.
+ env.classList.add('opening');
+ setTimeout(()=>{
+   env.hidden=true;introCard.hidden=false;state.intro='open';
+ },reduce()?0:480);
 });
 function releaseHearts(target){if(reduce())return;const rect=target.getBoundingClientRect();for(let i=0;i<9;i++){const h=document.createElement('span');h.className='confetti';h.textContent=i%2?'♡':'♥';h.style.left=(rect.left+rect.width*(.2+Math.random()*.6))+'px';h.style.top=(Math.max(40,rect.top)+rect.height*.45)+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),1650)}}
 function chooseHug(yes){
