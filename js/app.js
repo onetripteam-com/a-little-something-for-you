@@ -23,9 +23,21 @@ on('open-letter',()=>{
 function releaseHearts(target){if(reduce())return;const rect=target.getBoundingClientRect();for(let i=0;i<9;i++){const h=document.createElement('span');h.className='confetti';h.textContent=i%2?'♡':'♥';h.style.left=(rect.left+rect.width*(.2+Math.random()*.6))+'px';h.style.top=(Math.max(40,rect.top)+rect.height*.45)+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),1650)}}
 function chooseHug(yes){
  if(state.intro!=='open')return;state.intro='answered';
- const main=$('letter-copy'),reply=$('hug-reply');const height=introCard.getBoundingClientRect().height;
- introCard.style.minHeight=Math.max(270,Math.ceil(height))+'px';
+ const main=$('letter-copy'),reply=$('hug-reply');
+ // The earlier code copied the full letter height into min-height, leaving a
+ // giant blank panel after showing a much shorter Yes/No response.
+ const oldTop=introCard.getBoundingClientRect().top;
+ introCard.style.removeProperty('min-height');
  main.hidden=true;reply.hidden=false;
+ // Position the compact answer near the top of the viewport, rather than
+ // leaving the reader stranded at the old letter's lower scroll position.
+ requestAnimationFrame(()=>{
+   const newTop=introCard.getBoundingClientRect().top;
+   if(oldTop<0||newTop<0||newTop>window.innerHeight*.65){
+     const y=Math.max(0,introCard.getBoundingClientRect().top+window.scrollY-16);
+     window.scrollTo(0,y);
+   }
+ });
  $('hug-title').textContent=yes?'Consider yourself hugged. ♡':'No hug? Understood.';
  $('hug-text').textContent=yes?'A gentle, very long virtual hug. No questions, no speeches. Just a little warmth arriving with the worst delivery service imaginable.':'Fair enough. Your little courier respects that. They have officially switched departments and are now responsible for delivering flowers.';
  // Debounce newly shown continue button against touch-through/ghost clicks.
