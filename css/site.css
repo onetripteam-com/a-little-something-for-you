@@ -89,7 +89,7 @@ h1,h2{font-weight:400}
 .modal-card p{font:18px/1.85 Georgia,serif;margin:12px 0 22px}
 .modal-card .fold{font-size:34px;color:#b47a86;display:block;margin-bottom:13px}
 .modal-close{position:absolute;right:13px;top:11px;background:none;border:0;color:#956b72;font:26px system-ui,sans-serif;width:44px;height:44px;border-radius:50%}
-body.modal-open{overflow:hidden;touch-action:none}
+body.modal-open{overflow:hidden}
 .goodnight{display:grid;place-items:center;text-align:center;padding:100px 0;background:radial-gradient(ellipse at 50% 5%,#665875,#353550 48%,#1f2942 100%);color:#fff1e6}
 .goodnight .eyebrow{color:#e5c8b8}
 .goodnight h2{font-size:clamp(41px,8vw,68px);line-height:1.1;margin:20px 0}
