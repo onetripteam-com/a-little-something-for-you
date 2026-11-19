@@ -23,7 +23,10 @@ h1,h2{font-weight:400}
 .hello{display:grid;place-items:center;text-align:center;padding:92px 0 60px;color:#fff4e7;background:radial-gradient(ellipse at 50% 12%,#616a80 0,#3b4565 42%,#1f2945 100%)}
 .hello:before,.goodnight:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:radial-gradient(circle at 9% 15%,#fff6d8 1px,transparent 2px),radial-gradient(circle at 78% 8%,#fff6d8 1px,transparent 3px),radial-gradient(circle at 87% 53%,#fff6d8 1px,transparent 2px),radial-gradient(circle at 19% 75%,#fff6d8 1px,transparent 3px),radial-gradient(circle at 66% 81%,#fff6d8 1px,transparent 2px)}
 .topmark{position:absolute;left:0;right:0;top:18px;display:flex;align-items:center;justify-content:space-between;text-align:left;pointer-events:none;z-index:2}
-.topmark .wordmark{font:750 14px system-ui,sans-serif;letter-spacing:.24em}
+.topmark .wordmark{display:inline-flex;align-items:center;gap:12px;letter-spacing:0;white-space:nowrap}
+.topmark .wordmark-name{font:400 clamp(24px,4vw,31px)/1.1 Georgia,'Times New Roman',serif;letter-spacing:.22em;color:#fff3e6;text-shadow:0 2px 10px #121a3030}
+.topmark .wordmark-flower{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font:26px/1 Georgia,serif;color:#f5d8c4;filter:drop-shadow(0 2px 6px #18203935)}
+@media(max-width:530px){.topmark .wordmark{gap:9px}.topmark .wordmark-name{font-size:25px;letter-spacing:.17em}.topmark .wordmark-flower{font-size:23px;width:26px;height:26px}}
 .topmark .descriptor{font:10px system-ui,sans-serif;letter-spacing:.12em;opacity:.75;text-align:right}
 .hello .eyebrow{color:#ead2ba}
 .hello h1{font-size:clamp(39px,7vw,70px);line-height:1.06;letter-spacing:-.04em;max-width:740px;margin:18px auto 8px}
