@@ -8,15 +8,15 @@
  <meta name="description" content="A little pause, a few flowers, and a quiet note made with love.">
  <title>MAHA — A Little Pause</title>
  <link rel="icon" href="./assets/whale-courier.svg" type="image/svg+xml">
- <link rel="stylesheet" href="./css/site.css?v=6">
- <script src="./js/app.js?v=6" defer></script>
+ <link rel="stylesheet" href="./css/site.css?v=7">
+ <script src="./js/app.js?v=7" defer></script>
 </head>
 <body>
  <main>
   <section class="scene hello" id="hello" aria-labelledby="hello-title">
    <div class="content topmark">
     <div class="wordmark">✿ MAHA</div>
-    <div class="descriptor">A LITTLE ESCAPE · A PREVIEW</div>
+    
    </div>
    <div class="content">
     <div class="eyebrow">a small delivery, across the miles</div>
@@ -26,30 +26,10 @@
      <img class="butterfly" src="./assets/butterfly-courier.svg" width="40" height="35" alt="" aria-hidden="true" decoding="async">
     </div>
     <p class="subline" id="intro-prompt">Someone dropped off a letter. Open it whenever you feel like it.</p>
-    <button type="button" class="envelope" id="open-letter" aria-controls="letter" aria-expanded="false">
+    <button type="button" class="envelope" id="open-letter" aria-haspopup="dialog" aria-controls="letter" aria-expanded="false">
      <span class="wax">♡</span>
      <span class="addr">A LITTLE LETTER · TAP TO OPEN</span>
     </button>
-    <article class="letter" id="letter" hidden aria-label="A letter for you">
-     <div id="letter-copy">
-      <div class="eyebrow">a note, before the flowers</div>
-      <p>Hey, Maha.</p>
-      <p>I know you’re not feeling great today, and I know that’s not the only thing on your mind. You don’t have to explain any of it, find the right words, or work everything out right now. You don’t have to pretend this day feels easier than it does.</p>
-      <p>I just wanted you to remember that there are people here who care about you. All of us. We’ll be around. No speeches, no advice you didn’t ask for. Just here.</p>
-      <p>I’ve been putting together a little world for you for a while now. It’s not finished, and I wasn’t planning to share it like this. But I thought maybe a tiny corner of it could keep you company today.</p>
-      <p>Also, I wanted to send an actual hug. Unfortunately, the logistics are terrible. So, while I sort that out… <em>would you accept a virtual one?</em></p>
-      <div class="button-row">
-       <button class="btn" id="hug-yes" type="button">Yes, please ♡</button>
-       <button class="btn alt" id="hug-no" type="button">No, thank you 🙈</button>
-      </div>
-     </div>
-     <div class="response" id="hug-reply" hidden aria-live="polite">
-      <span class="response-icon" aria-hidden="true">♡</span>
-      <h2 id="hug-title"></h2>
-      <p id="hug-text"></p>
-      <button class="btn" id="hug-next" type="button">See what came with it →</button>
-     </div>
-    </article>
     <button type="button" class="text-btn skip" id="intro-skip">Maybe later. Show me the flowers →</button>
     <p class="footnote">Nothing here needs an answer in real life.</p>
    </div>
@@ -156,6 +136,29 @@
    <p id="note-dialog-text"></p>
    <button class="btn alt" id="close-note-bottom" type="button">Fold it back ♡</button>
   </section>
+ </div>
+<div class="letter-overlay" id="letter-overlay" hidden>
+  <article class="letter letter-dialog" id="letter" role="dialog" aria-modal="true" aria-label="A little letter for Maha" aria-describedby="letter-copy" tabindex="-1">
+     <button class="letter-close" id="close-letter" type="button" aria-label="Close letter">×</button>
+     <div id="letter-copy">
+      <div class="eyebrow">a note, before the flowers</div>
+      <p>Hey, Maha.</p>
+      <p>I know you’re not feeling great today, and I know that’s not the only thing on your mind. You don’t have to explain any of it, find the right words, or work everything out right now. You don’t have to pretend this day feels easier than it does.</p>
+      <p>I just wanted you to remember that there are people here who care about you. All of us. We’ll be around. No speeches, no advice you didn’t ask for. Just here.</p>
+      <p>I’ve been putting together a little world for you for a while now. It’s not finished, and I wasn’t planning to share it like this. But I thought maybe a tiny corner of it could keep you company today.</p>
+      <p>Also, I wanted to send an actual hug. Unfortunately, the logistics are terrible. So, while I sort that out… <em>would you accept a virtual one?</em></p>
+      <div class="button-row">
+       <button class="btn" id="hug-yes" type="button">Yes, please ♡</button>
+       <button class="btn alt" id="hug-no" type="button">No, thank you 🙈</button>
+      </div>
+     </div>
+     <div class="response" id="hug-reply" hidden aria-live="polite">
+      <span class="response-icon" aria-hidden="true">♡</span>
+      <h2 id="hug-title"></h2>
+      <p id="hug-text"></p>
+      <button class="btn" id="hug-next" type="button">See what came with it →</button>
+     </div>
+    </article>
  </div>
 </body>
 </html>
