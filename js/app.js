@@ -10,42 +10,93 @@ const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify(state.flowers))
 function nav(id){const target=$(id);if(!target)return;const active=document.activeElement;if(active&&active!==document.body&&typeof active.blur==='function')active.blur();const y=Math.max(0,Math.round(target.getBoundingClientRect().top+window.scrollY));try{window.scrollTo({top:y,left:0,behavior:reduce()?'auto':'smooth'})}catch{window.scrollTo(0,y)}}
 function on(id,fn){const el=$(id);if(el)el.addEventListener('click',fn)}
 const introCard=$('letter');
-on('open-letter',()=>{
- if(state.intro!=='closed')return;state.intro='opening';
- const env=$('open-letter');env.disabled=true;env.setAttribute('aria-expanded','true');
- $('intro-prompt').hidden=true;$('intro-skip').hidden=true;
- // Let the envelope finish its own animation before introducing new tap targets.
- env.classList.add('opening');
- setTimeout(()=>{
-   env.hidden=true;introCard.hidden=false;state.intro='open';
- },reduce()?0:480);
+const introOverlay=$('letter-overlay');
+let introOpeningTimer=0;
+let hugNextTimer=0;
+function showLetter(){
+ if(!introOverlay.hidden||state.intro==='opening')return;
+ state.intro='opening';
+ const envelope=$('open-letter');
+ envelope.disabled=true;
+ envelope.classList.add('opening');
+ clearTimeout(introOpeningTimer);
+ introOpeningTimer=setTimeout(()=>{
+   envelope.classList.remove('opening');
+   envelope.disabled=false;
+   envelope.setAttribute('aria-expanded','true');
+   introOverlay.hidden=false;
+   document.body.classList.add('letter-open');
+   // An independent, fixed dialog cannot resize the home section or
+   // send a mobile viewport to an unexpected vertical position.
+   introCard.scrollTop=0;
+   state.intro=$('hug-reply').hidden?'open':'answered';
+   introCard.focus({preventScroll:true});
+ },reduce()?0:340);
+}
+function closeLetter(){
+ clearTimeout(introOpeningTimer);
+ introOverlay.hidden=true;
+ document.body.classList.remove('letter-open');
+ const envelope=$('open-letter');
+ envelope.classList.remove('opening');
+ envelope.disabled=false;
+ envelope.setAttribute('aria-expanded','false');
+ state.intro=$('hug-reply').hidden?'closed':'answered';
+ envelope.focus({preventScroll:true});
+}
+on('open-letter',showLetter);
+on('close-letter',closeLetter);
+introOverlay.addEventListener('click',e=>{if(e.target===introOverlay)closeLetter()});
+document.addEventListener('keydown',event=>{
+ if(introOverlay.hidden)return;
+ if(event.key==='Escape'){event.preventDefault();closeLetter();return}
+ if(event.key!=='Tab')return;
+ const controls=[...introCard.querySelectorAll('button:not([disabled]):not([hidden])')].filter(el=>el.offsetParent!==null);
+ if(!controls.length)return;
+ const first=controls[0],last=controls[controls.length-1];
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+ else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
 });
-function releaseHearts(target){if(reduce())return;const rect=target.getBoundingClientRect();for(let i=0;i<9;i++){const h=document.createElement('span');h.className='confetti';h.textContent=i%2?'♡':'♥';h.style.left=(rect.left+rect.width*(.2+Math.random()*.6))+'px';h.style.top=(Math.max(40,rect.top)+rect.height*.45)+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),1650)}}
+function releaseHearts(target){
+ if(reduce())return;
+ const rect=target.getBoundingClientRect();
+ for(let i=0;i<9;i++){
+   const h=document.createElement('span');h.className='confetti';
+   h.textContent=i%2?'♡':'♥';
+   h.style.left=(rect.left+rect.width*(.2+Math.random()*.6))+'px';
+   h.style.top=(Math.max(40,rect.top)+rect.height*.45)+'px';
+   document.body.appendChild(h);
+   setTimeout(()=>h.remove(),1650);
+ }
+}
 function chooseHug(yes){
- if(state.intro!=='open')return;state.intro='answered';
+ if(state.intro!=='open'||introOverlay.hidden)return;
+ state.intro='answered';
  const main=$('letter-copy'),reply=$('hug-reply');
- // The earlier code copied the full letter height into min-height, leaving a
- // giant blank panel after showing a much shorter Yes/No response.
- const oldTop=introCard.getBoundingClientRect().top;
- introCard.style.removeProperty('min-height');
  main.hidden=true;reply.hidden=false;
- // Position the compact answer near the top of the viewport, rather than
- // leaving the reader stranded at the old letter's lower scroll position.
- requestAnimationFrame(()=>{
-   const newTop=introCard.getBoundingClientRect().top;
-   if(oldTop<0||newTop<0||newTop>window.innerHeight*.65){
-     const y=Math.max(0,introCard.getBoundingClientRect().top+window.scrollY-16);
-     window.scrollTo(0,y);
-   }
- });
+ // No min-height copied from the long letter; the compact response
+ // is rendered in the same fixed, internally scrollable dialog.
+ introCard.style.removeProperty('min-height');
  $('hug-title').textContent=yes?'Consider yourself hugged. ♡':'No hug? Understood.';
- $('hug-text').textContent=yes?'A gentle, very long virtual hug. No questions, no speeches. Just a little warmth arriving with the worst delivery service imaginable.':'Fair enough. Your little courier respects that. They have officially switched departments and are now responsible for delivering flowers.';
- // Debounce newly shown continue button against touch-through/ghost clicks.
- $('hug-next').disabled=true;setTimeout(()=>{$('hug-next').disabled=false},450);
+ $('hug-text').textContent=yes?
+ 'A gentle, very long virtual hug. No questions, no speeches. Just a little warmth arriving with the worst delivery service imaginable.':
+ 'Fair enough. Your little courier respects that. They have officially switched departments and are now responsible for delivering flowers.';
+ reply.querySelector('.response-icon').textContent=yes?'♡':'✿';
+ introCard.scrollTop=0;
+ // Disable any new action until the original touch has completed.
+ $('hug-next').disabled=true;
+ clearTimeout(hugNextTimer);
+ hugNextTimer=setTimeout(()=>{$('hug-next').disabled=false},500);
  if(yes)releaseHearts(introCard);
 }
-on('hug-yes',()=>chooseHug(true));on('hug-no',()=>chooseHug(false));
-on('hug-next',()=>nav('flowers'));on('intro-skip',()=>nav('flowers'));
+on('hug-yes',()=>chooseHug(true));
+on('hug-no',()=>chooseHug(false));
+on('hug-next',()=>{
+ if($('hug-next').disabled)return;
+ closeLetter();
+ requestAnimationFrame(()=>nav('flowers'));
+});
+on('intro-skip',()=>nav('flowers'));
 const species=[
 {name:'Rose',petals:8,shape:'rose',color:'#c66d80',center:'#e4b1ae'},
 {name:'Daisy',petals:12,shape:'slim',color:'#fff1d9',center:'#e6b24f'},
