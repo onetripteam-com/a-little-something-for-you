@@ -42,7 +42,7 @@ h1,h2{font-weight:400}
 .letter .eyebrow{color:#a87878}
 .letter p{font-size:clamp(16px,2.2vw,19px);line-height:1.8;margin:15px 0}
 .letter em{color:#a65a6b}
-.letter .response{text-align:center;padding:10px 0}
+.letter .response{text-align:center;padding:10px 0;max-width:100%}
 .letter .response h2{font-size:clamp(29px,5vw,39px);line-height:1.18;margin:14px 0}
 .letter .response p{max-width:410px;margin:15px auto 24px}
 .letter .response .response-icon{font-size:45px;color:#b26a7d}
@@ -115,3 +115,8 @@ body.modal-open{overflow:hidden}
 @media(max-width:530px){.content{width:min(100% - 26px,1030px)}.hello{padding:90px 0 56px}.topmark .descriptor{font-size:9px}.hello h1{font-size:40px}.letter{padding:22px}.letter p{font-size:16px}.button-row{flex-direction:column}.button-row .btn{width:100%}.flower-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.flower-choice{min-height:91px}.stage{height:min(100vw,395px)}.note-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.note-card{min-height:150px}.section-title{font-size:39px}.modal-card p{font-size:16px}}
 @media(max-width:340px){.note-grid{grid-template-columns:1fr}.flower-grid{gap:6px}.flower-choice{min-height:87px}.flower-choice .name{font-size:10px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Compact response card: never inherit the expanded letter's measured height. */
+.letter:has(#hug-reply:not([hidden])){min-height:0!important;height:auto!important}
+.letter .response .btn{max-width:100%;white-space:normal}
+@media(max-width:530px){.letter .response{padding:6px 0}.letter .response h2{font-size:30px}.letter .response p{line-height:1.65}.letter .response .btn{width:100%}}
